@@ -1,4 +1,6 @@
-#' Julendat identification of gap lengths
+#' Julendat function to identify lengths of measurement gaps
+#' 
+#' @export gfGapLength
 gfGapLength <- function(data.dep, 
                         pos.na,
                         gap.limit,
@@ -6,50 +8,6 @@ gfGapLength <- function(data.dep,
                         units, 
                         ...) {
 
-  ################################################################################
-  ##  
-  ##  This program takes the data set of the dependent plot as well as its 
-  ##  associated NA positions as input and calculates the length of each gap.
-  ##  
-  ##  parameters are as follows:
-  ##  
-  ##  data.dep (ki.data):         Data set of dependent plot.
-  ##  pos.na (numeric):           NA positions in data set of dependent plot.
-  ##  gap.limit (numeric):        Maximum length of a gap to be filled.
-  ##  end.datetime (datetime):    End date and time to be set for final gap
-  ##  ...                         Further arguments to be passed
-  ##
-  ################################################################################
-  ##
-  ##  Copyright (C) 2013 Florian Detsch, Tim Appelhans
-  ##
-  ##  This program is free software: you can redistribute it and/or modify
-  ##  it under the terms of the GNU General Public License as published by
-  ##  the Free Software Foundation, either version 3 of the License, or
-  ##  (at your option) any later version.
-  ##
-  ##  This program is distributed in the hope that it will be useful,
-  ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ##  GNU General Public License for more details.
-  ##
-  ##  You should have received a copy of the GNU General Public License
-  ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  ##
-  ##  Please send any comments, suggestions, criticism, or (for our sake) bug
-  ##  reports to florian.detsch@geo.uni-marburg.de
-  ##
-  ################################################################################
-  
-  cat("\n",
-      "Module   :  gfGapLength", "\n",
-      "Author   :  Florian Detsch <florian.detsch@geo.uni-marburg.de>, Tim Appelhans <tim.appelhans@gmail.com>",
-      "Version  :  2013-01-08", "\n",
-      "License  :  GNU GPLv3, see http://www.gnu.org/licenses/", "\n",
-      "\n")
-  
-  ########## FUNCTION BODY #######################################################
-  
   # Temporal space between single NA values
   pos.na.diff <- c(-99, diff(pos.na), -99)
   

@@ -1,4 +1,6 @@
 export(as.ki.data)
+export(gfGapLength)
+export(gfLinInt)
 export(gsod2ki)
 export(outlier2na)
 export(tsOutliers)

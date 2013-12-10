@@ -2,7 +2,6 @@
 #' 
 #' @export outlier2na
 outlier2na <- function(data, 
-                       file, 
                        prm = "TEMP", 
                        save.output = F,
                        ...) {
@@ -12,7 +11,7 @@ outlier2na <- function(data,
     # Extract time series of current parameter from ki.data object
     vec <- data@Parameter[[j]]
     # Identify outliers
-    outliers <- tsOutliers(vec, index = T, ...)
+    outliers <- tsOutliers(vec, index = T)
     # Replace identified outliers with NA
     vec[outliers] <- NA
     # Insert adjusted time series into referring slot of ki.data object
@@ -31,9 +30,7 @@ outlier2na <- function(data,
                          "Qualityflag" = data@Qualityflag, 
                          "TEMP" = data@Parameter$TEMP, 
                          "MAX" = data@Parameter$MAX, 
-                         "MIN" = data@Parameter$MIN), 
-              paste0(substr(file, 1, nchar(file)-4), "_sd.csv"), 
-              row.names = F)
+                         "MIN" = data@Parameter$MIN), ...)
   
   return(data)
 }

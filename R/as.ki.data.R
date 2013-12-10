@@ -1,46 +1,6 @@
-################################################################################
-##  
-##  This program imports a data set of arbitrary temporal range and 
-##  converts it to a ki.data object for further processing.
-##  
-##  parameters are as follows:
-##  
-##  input_filepath (character) :  Input file path.
-##  ...                           Further arguments to be passed
-##
-################################################################################
-##
-##  Copyright (C) 2013 Tim Appelhans, Florian Detsch
-##
-##  This program is free software: you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation, either version 3 of the License, or
-##  (at your option) any later version.
-##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-##  GNU General Public License for more details.
-##
-##  You should have received a copy of the GNU General Public License
-##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-##
-##  Please send any comments, suggestions, criticism, or (for our sake) bug
-##  reports to tim.appelhans@gmail.com
-##
-################################################################################
-
-########## FUNCTION BODY #######################################################
-
 #' Convert data set to ki.data object
 #' 
 #' @export as.ki.data
-cat("\n",
-    "Module   :  as.ki.data", "\n",
-    "Author   :  Tim Appelhans <tim.appelhans@gmail.com>, Florian Detsch <florian.detsch@geo.uni-marburg.de>",
-    "Version  :  2013-01-07", "\n",
-    "License  :  GNU GPLv3, see http://www.gnu.org/licenses/", "\n",
-    "\n")
 
 setClass("ki.data",
          representation(
