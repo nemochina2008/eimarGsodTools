@@ -1,4 +1,6 @@
 #' Julendat function to generate gap-filled output data
+#' 
+#' @export gfOutputData
 gfOutputData <- function(data.dep,
                          plevel, 
                          ...) {
@@ -24,5 +26,5 @@ gfOutputData <- function(data.dep,
                     Processlevel = processlevel,
                     Qualityflag = qualityflag,
                     parameter, 
-                    stringsAsFactors = FALSE))
+                    stringsAsFactors = F))
 }

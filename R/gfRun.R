@@ -1,4 +1,6 @@
 #' Julendat wrapper function controlling imputation of missing values
+#' 
+#' @export gfRun
 gfRun <- function(files.dep,
                   files.indep,
                   filepath.coords, 
@@ -15,26 +17,15 @@ gfRun <- function(files.dep,
                   plevel,
                   ...) {
   
-  # Required functions
-  source("as.ki.data.R")
-  source("gfRejectLowQuality.R")
-  source("gfGapLength.R")
-  source("gfImputeMissingValue.R")
-  source("gfOutputData.R")
-  
-  
-  
-  ### Data import
-  
+  ## Data import
   
   # Import plot coordinates
   if (!is.null(filepath.coords)) {
-    data.coords <- read.csv(filepath.coords, header=TRUE)
-    data.coords <- data.coords[,c("PlotID", "Lon", "Lat")]
+    data.coords <- read.csv(filepath.coords, header = T)
+    data.coords <- data.coords[, c("PlotID", "Lon", "Lat")]
   } else {
     data.coords <- NULL
   }
-  
   
   # Import data set of dependent plot
   ki.data.dep <- as.ki.data(files.dep)
@@ -45,9 +36,7 @@ gfRun <- function(files.dep,
   })
   
   
-  
-  ### Rejection of records with bad quality flags
-  
+  ## Rejection of records with bad quality flags
   
   # Loop through dependent parameters
   for (i in seq(prm.dep)) {
@@ -59,7 +48,6 @@ gfRun <- function(files.dep,
                                         prm.dep = prm.dep[i], 
                                         quality.levels = quality.levels)
       
-      
       # Independent plots
       ki.data.indep <- gfRejectLowQuality(data = ki.data.indep, 
                                           prm.dep = prm.dep[i], 
@@ -67,9 +55,7 @@ gfRun <- function(files.dep,
     }
     
     
-    
-    ### Imputation of missing values
-    
+    ## Imputation of missing values
     
     # Output list
     model.output <- list()
@@ -85,7 +71,6 @@ gfRun <- function(files.dep,
                             end.datetime = end.datetime, 
                             units = units)
       
-      
       # Impute missing value(s)
       model.output <- lapply(seq(pos.na), function(j) {
         gfImputeMissingValue(data.dep = ki.data.dep, 
@@ -100,29 +85,24 @@ gfRun <- function(files.dep,
                              family = family)
       })
       
-      
       # Replace NA values by predicted values
       for (h in seq(pos.na)) {
         gap.start <- pos.na[[h]][,1]
         gap.end <- pos.na[[h]][,2]
         gap.span <- seq(gap.start, gap.end)
         
-        ki.data.dep@Parameter[[prm.dep[i]]][gap.span] <- round(unlist(lapply(seq(model.output[[h]]), function(l) {
-          model.output[[h]][[l]][[4]]
-        })), digits = 2)
+        ki.data.dep@Parameter[[prm.dep[i]]][gap.span] <- 
+          round(unlist(lapply(seq(model.output[[h]]), function(l) {
+            model.output[[h]][[l]][[4]]
+          })), digits = 2)
       }
     }
   }
   
   
-  
-  ### Gap-filled output data frame
-  
-  
+  # Set up and return output data
   data.output <- gfOutputData(data.dep = ki.data.dep, 
                               plevel = plevel)
   
-  
-  # Return output
   return(list(model.output, data.output))
 }
