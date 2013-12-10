@@ -17,16 +17,16 @@ gsod2ki <- function(file.gsod,
                     station.id = NA,
                     proc.level = -999,
                     qual.flag = NA,
-                    save.output = F, 
+                    save.output = F,
+                    df2ki = T,
                     ...) {
   
   # Required packages
   stopifnot(require(zoo))
   
   # Import data
-  gsof <- read.table(file.gsod, header = T,
-                     sep = ifelse(comma.separated, ",", ""), 
-                     stringsAsFactors = F)
+  gsof <- read.table(file.gsod, header = T, stringsAsFactors = F, 
+                     sep = ifelse(comma.separated, ",", ""))
   
   # Subset data by given start and end date (optional)
   index <- as.Date(paste0(substr(gsof[, date.column], 1, 4), "-01-01"))
@@ -82,6 +82,9 @@ gsod2ki <- function(file.gsod,
   if (save.output)
     write.csv(gsof.ts, ...)
   
+  if (df2ki)
+    gsof.ts <- as.ki.data(gsof.ts)
+    
   return(gsof.ts)
 }
 

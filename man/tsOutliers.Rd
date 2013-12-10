@@ -1,0 +1,11 @@
+\name{tsOutliers}
+\alias{tsOutliers}
+\title{Identify statistical outliers in time series}
+\usage{
+tsOutliers(x, lower.limit = 0.2, upper.limit = 0.8, plot = F, index = F,
+  ...)
+}
+\description{
+Identify statistical outliers in time series
+}
+

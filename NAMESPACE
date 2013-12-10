@@ -1,1 +1,4 @@
+export(as.ki.data)
 export(gsod2ki)
+export(outlier2na)
+export(tsOutliers)

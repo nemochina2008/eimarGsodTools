@@ -33,51 +33,56 @@
 ########## FUNCTION BODY #######################################################
 
 #' Convert data set to ki.data object
+#' 
+#' @export as.ki.data
+cat("\n",
+    "Module   :  as.ki.data", "\n",
+    "Author   :  Tim Appelhans <tim.appelhans@gmail.com>, Florian Detsch <florian.detsch@geo.uni-marburg.de>",
+    "Version  :  2013-01-07", "\n",
+    "License  :  GNU GPLv3, see http://www.gnu.org/licenses/", "\n",
+    "\n")
+
+setClass("ki.data",
+         representation(
+           Datetime = "POSIXct",
+           Date = "list",
+           Time = "list",
+           AggregationLevels = "list",
+           Origin = "character",
+           Season = "character",
+           Timezone = "character",
+           Aggregationtime = "character",
+           PlotId = "list",
+           EpPlotId = "character",
+           StationId = "list",
+           Processlevel = "integer",
+           Qualityflag = "character",
+           Valid = "list",
+           Parameter = "list",
+           PrmHisto = "list"
+         )
+)
+
 as.ki.data <- function(input_filepath, 
                        start.column = 9,  
                        ...) {
   
-  cat("\n",
-      "Module   :  as.ki.data", "\n",
-      "Author   :  Tim Appelhans <tim.appelhans@gmail.com>, Florian Detsch <florian.detsch@geo.uni-marburg.de>",
-      "Version  :  2013-01-07", "\n",
-      "License  :  GNU GPLv3, see http://www.gnu.org/licenses/", "\n",
-      "\n")
-    
-  setClass("ki.data",
-           representation(
-             Datetime = "POSIXct",
-             Date = "list",
-             Time = "list",
-             AggregationLevels = "list",
-             Origin = "character",
-             Season = "character",
-             Timezone = "character",
-             Aggregationtime = "character",
-             PlotId = "list",
-             EpPlotId = "character",
-             StationId = "list",
-             Processlevel = "integer",
-             Qualityflag = "character",
-             Valid = "list",
-             Parameter = "list",
-             PrmHisto = "list"
-           )
-  )
   
 
   stopifnot(require(ggplot2, quietly = TRUE))
   stopifnot(require(reshape, quietly = TRUE))
  
-  # Check if data set to convert to ki.data already exists, otherwise import via read.table 
-  ## Comment out by tnauss, 2013-0613, todo Florian: check!
-  ##if (exists("input_filepath")) {
-  ##  df <- input_filepath
-  ##} else {
-  ##  print (input_filepath)
+  # Check if data set to convert to ki.data already exists, 
+  # otherwise import via read.table 
+  if (class(input_filepath) == "character") {
     df <- read.table(input_filepath, header = T, sep = ",", fill = T,
                      stringsAsFactors = F, na.strings = c("", "NA", "NaN"))
-  ##}
+  } else if (class(input_filepath) == "data.frame") {
+    df <- input_filepath
+  } else {
+    stop("Supplied argument 'input_filepath' is neither a valid filepath
+          nor an already existing data frame!")
+  }
 
   year <- substr(df$Datetime, 1, 4)
   len <- length(year)
