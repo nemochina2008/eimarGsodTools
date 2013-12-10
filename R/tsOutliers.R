@@ -1,3 +1,4 @@
+# Taken from http://stats.stackexchange.com/questions/1142/simple-algorithm-for-online-outlier-detection-of-a-generic-time-series
 #' Identify statistical outliers in time series
 #' 
 #' @export tsOutliers
