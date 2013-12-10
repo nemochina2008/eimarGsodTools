@@ -1,0 +1,13 @@
+\name{gfCompleteMonthlyCases}
+\alias{gfCompleteMonthlyCases}
+\title{Identification of plots with valid contemporary measurements}
+\usage{
+gfCompleteMonthlyCases(data.dep, data.indep, data.indep.avl, n.plot = 10,
+  prm.dep = "Ta_200", time.window.pre, time.window.post, pos.na,
+  prm.indep = NA, ...)
+}
+\description{
+Identification of plots with valid contemporary
+measurements
+}
+

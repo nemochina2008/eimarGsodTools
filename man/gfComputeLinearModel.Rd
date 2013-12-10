@@ -1,0 +1,13 @@
+\name{gfComputeLinearModel}
+\alias{gfComputeLinearModel}
+\title{Julendat gap-filling based on linear modelling}
+\usage{
+gfComputeLinearModel(data = NULL, data.cc = NULL, data.dep,
+  family = gaussian, pos.na, plots = NULL, n.plot = 10,
+  prm.dep = "Ta_200", prm.indep = NA, time.window.pre, time.window.pre.span,
+  time.window.post, time.window.post.span, ...)
+}
+\description{
+Julendat gap-filling based on linear modelling
+}
+

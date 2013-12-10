@@ -1,0 +1,13 @@
+\name{gfRun}
+\alias{gfRun}
+\title{Julendat wrapper function controlling imputation of missing values}
+\usage{
+gfRun(files.dep, files.indep, filepath.coords, quality.levels, gap.limit,
+  end.datetime, units, na.limit, time.window, n.plot, prm.dep, prm.indep,
+  family, plevel, ...)
+}
+\description{
+Julendat wrapper function controlling imputation of missing
+values
+}
+
