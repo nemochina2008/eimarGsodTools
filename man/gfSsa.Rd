@@ -2,7 +2,8 @@
 \alias{gfSsa}
 \title{Impute missing values based on singular spectrum analysis (SSA)}
 \usage{
-gfSsa(data, prm = "TEMP", reversed.forecast = F, save.output = F, ...)
+gfSsa(data, prm = "TEMP", reversed.forecast = F, origin = "1970-01-01",
+  save.output = F, ...)
 }
 \description{
 Impute missing values based on singular spectrum analysis

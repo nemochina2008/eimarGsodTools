@@ -1,0 +1,11 @@
+\name{adjGsodStations}
+\alias{adjGsodStations}
+\title{Identify nearby GSOD stations based on a given geographic location}
+\usage{
+adjGsodStations(x, y = NULL, locations, width = 50, id = F, ...)
+}
+\description{
+Identify nearby GSOD stations based on a given geographic
+location
+}
+
