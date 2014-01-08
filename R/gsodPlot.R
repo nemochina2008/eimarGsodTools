@@ -79,13 +79,21 @@ gsodPlot <- function(fls.orig = NULL,
       geom_line(aes(x = DATE, y = TEMP, colour = "grey50"), data = ta.gf.df) + 
       facet_wrap(~ PLOT, ncol = 2) + 
       stat_smooth(aes(x = DATE, y = TEMP, colour = "black"), data = ta.gf.df, 
-                  method = "lm", size = 1.5, linetype = "dashed", se = F) + 
+                  method = "lm", size = 1.5, linetype = "dashed", se = FALSE) + 
+      stat_smooth(aes(x = DATE, y = MIN, colour = "blue"), data = ta.gf.df, 
+                  method = "lm", size = 1.2, linetype = "dashed", se = FALSE) + 
+      stat_smooth(aes(x = DATE, y = MAX, colour = "red"), data = ta.gf.df, 
+                  method = "lm", size = 1.2, linetype = "dashed", se = FALSE) + 
       scale_x_date(limits = c(as.Date("1973-01-01"), as.Date("2013-12-31")), 
                    breaks = seq(as.Date("1970-01-01"), as.Date("2020-01-01"), "10 years"), 
                    labels = date_format("%Y"), minor_breaks = date_breaks("2 years")) + 
-      scale_colour_manual("", values = c("black" = "black", "grey50" = "grey50"), 
-                          breaks = c("grey50", "black"),
-                          labels = c("Gap-filled data", "Linear trend")) +
+      scale_colour_manual("GSOD air temperature", 
+                          values = c("black" = "black", "grey50" = "grey50", 
+                                     "blue" = "blue", "red" = "red"), 
+                          breaks = c("grey50", "black", "blue", "red"),
+                          labels = c("Mean", "Mean (linear trend)", 
+                                     "Minimum (linear trend)", 
+                                     "Maximum (linear trend")) +
       labs(list(x = "Time [d]", y = "Temperature [°C]")) + 
       theme_bw() + 
       theme(text = element_text(size = 25), 
