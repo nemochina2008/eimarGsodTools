@@ -20,31 +20,32 @@ dlGsodStations <- function(wban,
   }
   
   # Extract desired station from list of GSOD stations
-  dl_wbans <- locations[locations$USAF %in% wban, ]
+  dl.wbans <- locations[locations$USAF %in% wban, ]
 
   # Loop through all GSOD stations to be downloaded
-  for (wbans in seq(nrow(dl_wbans))) {
+  for (wbans in 1:nrow(dl.wbans)) {
     
     # Verify user-defined temporal range
-    start.year <- max(start.year.rec, substr(dl_wbans$BEGIN[wbans], 1, 4))
-    end.year <- min(end.year.rec, substr(dl_wbans$END[wbans], 1, 4))
+    start.year <- max(start.year.rec, substr(dl.wbans$BEGIN[wbans], 1, 4))
+    end.year <- min(end.year.rec, substr(dl.wbans$END[wbans], 1, 4))
 
     # Abandon current iteration in case start_year is higher than end_year
     if (start.year > end.year) {
-      cat("Skipping GSOD station ", dl_wbans$USAF[wbans], 
+      cat("Skipping GSOD station ", dl.wbans$USAF[wbans], 
           ": Start year is higher than end year!", sep = "")
       next()
     }
     
-    cat("Processing GSOD station", dl_wbans$USAF[wbans], "...")
+    cat("Processing GSOD station", dl.wbans$USAF[wbans], "... \n")
     
     # Download op.gz of current station per year
     for (year in start.year:end.year) {
       # Basename of both URL and destfile
-      dlbase <- paste(dl_wbans$USAF[wbans], "-", dl_wbans$WBAN[wbans], "-", 
+      dlbase <- paste(dl.wbans$USAF[wbans], "-", dl.wbans$WBAN[wbans], "-", 
                       year, ".op.gz", sep = "")
       # URL
-      dlurl <- paste0("ftp://ftp.ncdc.noaa.gov/pub/data/gsod/", dlbase)
+      dlurl <- paste0("ftp://ftp.ncdc.noaa.gov/pub/data/gsod/", year, "/", 
+                      dlbase)
       # Destfile
       dlfile <- paste0(dsn, "/", dlbase)
       # Download
