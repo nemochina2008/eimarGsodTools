@@ -8,7 +8,8 @@ gsodPlot <- function(fls.orig = NULL,
                      ...) {
   
   # Required packages
-  libs <- c("zoo", "doParallel", "Hmisc", "bfast", "ggplot2", "scales")
+  libs <- c("zoo", "doParallel", "Hmisc", "bfast", "ggplot2", "scales", 
+            "plyr", "reshape2")
   lapply(libs, function(i) require(i, character.only = TRUE))
   
   
@@ -38,8 +39,12 @@ gsodPlot <- function(fls.orig = NULL,
   
   # Reformat and append data
   ta.gf.df <- foreach(i = ta.gf, j = stations, .combine = "rbind") %do%
-    data.frame(DATE = time(i), PLOT = j, TEMP = as.numeric(i$TEMP), 
+    data.frame(DATE = time(i), PLOT = j, MEAN = as.numeric(i$TEMP), 
                MAX = as.numeric(i$MAX), MIN = as.numeric(i$MIN))
+  
+  ta.gf.df <- melt(ta.gf.df, id.vars = c(1, 2))
+  
+  ta.gf.df$variable <- factor(ta.gf.df$variable, levels = c("MIN", "MEAN", "MAX"))
   
   
   
@@ -75,26 +80,54 @@ gsodPlot <- function(fls.orig = NULL,
     
   # Plot gap-filled GSOD data only  
   } else {  
-    ggplot() + 
-      geom_line(aes(x = DATE, y = TEMP, colour = "grey50"), data = ta.gf.df) + 
+#     ggplot() + 
+#       geom_line(aes(x = DATE, y = TEMP, colour = "grey50"), data = ta.gf.df) + 
+#       facet_wrap(~ PLOT, ncol = 2) + 
+#       stat_smooth(aes(x = DATE, y = TEMP, colour = "black"), linetype = "solid",
+#                   data = ta.gf.df, method = "lm", size = 1.5, se = FALSE) + 
+#       stat_smooth(aes(x = DATE, y = MIN, colour = "blue"), linetype = "dotted", 
+#                   data = ta.gf.df, method = "lm", size = 1.2, se = FALSE) + 
+#       stat_smooth(aes(x = DATE, y = MAX, colour = "red"), linetype = "dotted", 
+#                   data = ta.gf.df, method = "lm", size = 1.2, se = FALSE) + 
+#       scale_x_date(limits = c(as.Date("1973-01-01"), as.Date("2013-12-31")), 
+#                    breaks = seq(as.Date("1970-01-01"), as.Date("2020-01-01"), "10 years"), 
+#                    labels = date_format("%Y"), minor_breaks = date_breaks("2 years")) + 
+#       scale_colour_manual("GSOD daily \nair temperature", 
+#                           values = c("black" = "black", "grey50" = "grey50", 
+#                                      "blue" = "blue", "red" = "red"), 
+#                           breaks = c("grey50", "black", "blue", "red"),
+#                           labels = c("Mean", "Mean (linear trend)", 
+#                                      "Minimum (linear trend)", 
+#                                      "Maximum (linear trend)")) +
+#       scale_linetype_manual(values = c(rep("solid", 2), rep("dotted", 2))) +
+#       labs(list(x = "Time [d]", y = "Temperature [°C]")) + 
+#       theme_bw() + 
+#       theme(text = element_text(size = 25), 
+#             legend.key = element_rect(fill = "transparent"), 
+#             panel.grid.major = element_line(size = 1.2), 
+#             panel.grid.minor = element_line(size = 1.1))
+    ggplot(aes(x = DATE, y = value, colour = variable, linetype = variable), 
+           data = ta.gf.df) + 
+      geom_line(,subset = .(variable == "MEAN"), colour = "grey65") +
+      stat_smooth(size = 1.2, method = "lm", se = FALSE) + 
       facet_wrap(~ PLOT, ncol = 2) + 
-      stat_smooth(aes(x = DATE, y = TEMP, colour = "black"), data = ta.gf.df, 
-                  method = "lm", size = 1.5, linetype = "dashed", se = FALSE) + 
-      stat_smooth(aes(x = DATE, y = MIN, colour = "blue"), data = ta.gf.df, 
-                  method = "lm", size = 1.2, linetype = "dashed", se = FALSE) + 
-      stat_smooth(aes(x = DATE, y = MAX, colour = "red"), data = ta.gf.df, 
-                  method = "lm", size = 1.2, linetype = "dashed", se = FALSE) + 
       scale_x_date(limits = c(as.Date("1973-01-01"), as.Date("2013-12-31")), 
                    breaks = seq(as.Date("1970-01-01"), as.Date("2020-01-01"), "10 years"), 
                    labels = date_format("%Y"), minor_breaks = date_breaks("2 years")) + 
-      scale_colour_manual("GSOD air temperature", 
-                          values = c("black" = "black", "grey50" = "grey50", 
-                                     "blue" = "blue", "red" = "red"), 
-                          breaks = c("grey50", "black", "blue", "red"),
-                          labels = c("Mean", "Mean (linear trend)", 
-                                     "Minimum (linear trend)", 
-                                     "Maximum (linear trend")) +
-      labs(list(x = "Time [d]", y = "Temperature [°C]")) + 
+      scale_linetype_manual("Linear trends of daily", 
+                            values = c("dotted", "solid", "dotted"), 
+                            labels = c("Minimum", 
+                                       "Mean",                                      
+                                       "Maximum")) +
+      scale_colour_manual("Linear trends of daily", 
+                          values = c("blue", "black", "red"), 
+                          labels = c("Minimum", 
+                                     "Mean",                                      
+                                     "Maximum")) +
+      labs(colour = "Linear trends of daily", 
+           linetype = "Linear trends of daily") + 
+      labs(list(title = "GSOD daily air temperature (1973-2012)\n", 
+                x = "\nTime [d]", y = "Temperature [°C]\n")) + 
       theme_bw() + 
       theme(text = element_text(size = 25), 
             legend.key = element_rect(fill = "transparent"), 
