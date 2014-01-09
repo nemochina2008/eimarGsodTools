@@ -5,6 +5,7 @@ gsodPlot <- function(fls.orig = NULL,
                      fls.gf, 
                      stations, 
                      plot.orig = FALSE, 
+                     prm.orig = "TEMP",
                      ...) {
   
   # Required packages
@@ -26,8 +27,7 @@ gsodPlot <- function(fls.orig = NULL,
     
     # Reformat and append data
     ta.orig.df <- foreach(i = ta.orig, j = stations, .combine = "rbind") %do%
-      data.frame(DATE = time(i), PLOT = j, TEMP = as.numeric(i$TEMP), 
-                 MAX = as.numeric(i$MAX), MIN = as.numeric(i$MIN))
+      data.frame(DATE = time(i), PLOT = j, Original = as.numeric(i[, prm.orig]))
   }
   
   # Gap-filled GSOD data
@@ -36,16 +36,6 @@ gsodPlot <- function(fls.orig = NULL,
                          header = TRUE, sep = ",", regular = TRUE)
     return(ta.gf.ts)
   })
-  
-  # Reformat and append data
-  ta.gf.df <- foreach(i = ta.gf, j = stations, .combine = "rbind") %do%
-    data.frame(DATE = time(i), PLOT = j, MEAN = as.numeric(i$TEMP), 
-               MAX = as.numeric(i$MAX), MIN = as.numeric(i$MIN))
-  
-  ta.gf.df <- melt(ta.gf.df, id.vars = c(1, 2))
-  
-  ta.gf.df$variable <- factor(ta.gf.df$variable, levels = c("MIN", "MEAN", "MAX"))
-  
   
   
   # ## Breakpoint detection
@@ -62,16 +52,29 @@ gsodPlot <- function(fls.orig = NULL,
     
   # Plot original and gap-filled GSOD data  
   if (plot.orig) {
-    ggplot() + 
-      geom_line(aes(x = DATE, y = TEMP, colour = "grey50"), data = ta.gf.df) + 
+    # Reformat and append gap-filled station data
+    ta.gf.df <- foreach(i = ta.gf, j = stations, .combine = "rbind") %do%
+      data.frame(DATE = time(i), PLOT = j, Imputed = as.numeric(i[, prm.orig]))
+    
+    # Merge and meltoriginal and gap-filled data
+    ta.orig.gf.df <- merge(ta.orig.df, ta.gf.df, all = TRUE, by = c(1, 2))
+    ta.orig.gf.df.mlt <- melt(ta.orig.gf.df, id.vars = c(1, 2))
+    
+    ta.orig.gf.df.mlt$variable <- factor(ta.orig.gf.df.mlt$variable, 
+                                         levels = c("Imputed", "Original"))
+    
+    ggplot(aes(x = DATE, y = value, group = variable, colour = variable), 
+           data = ta.orig.gf.df.mlt) + 
+      geom_line() + 
       facet_wrap(~ PLOT, ncol = 2) + 
-      geom_line(aes(x = DATE, y = TEMP, colour = "black"), data = ta.orig.df) + 
       scale_x_date(limits = c(as.Date("1973-01-01"), as.Date("2013-12-31")), 
                    breaks = seq(as.Date("1970-01-01"), as.Date("2020-01-01"), "10 years"), 
                    labels = date_format("%Y"), minor_breaks = date_breaks("2 years")) + 
-      scale_colour_manual("", values = c("black", "grey50"), 
-                          labels = c("Original data", "Gap-filled data")) +
-      labs(list(x = "Time [d]", y = "Temperature [°C]")) +
+      scale_colour_manual("", values = c("grey65", "black"), 
+                          labels = c("Original data", "Imputed data"), 
+                          breaks = c("Original", "Imputed")) +
+      labs(list(title = "GSOD daily air temperature (1973-2012)\n", 
+                x = "\nTime [d]", y = "Temperature [°C]\n")) + 
       theme_bw() + 
       theme(text = element_text(size = 25), 
             legend.key = element_rect(fill = "transparent"), 
@@ -80,6 +83,16 @@ gsodPlot <- function(fls.orig = NULL,
     
   # Plot gap-filled GSOD data only  
   } else {  
+    # Reformat and append gap-filled data
+    ta.gf.df <- foreach(i = ta.gf, j = stations, .combine = "rbind") %do%
+      data.frame(DATE = time(i), PLOT = j, MEAN = as.numeric(i$TEMP), 
+                 MAX = as.numeric(i$MAX), MIN = as.numeric(i$MIN))
+    
+    # Melt gap-filled data
+    ta.gf.df <- melt(ta.gf.df, id.vars = c(1, 2))
+    # Reorder factor levels
+    ta.gf.df$variable <- factor(ta.gf.df$variable, levels = c("MIN", "MEAN", "MAX"))
+    
 #     ggplot() + 
 #       geom_line(aes(x = DATE, y = TEMP, colour = "grey50"), data = ta.gf.df) + 
 #       facet_wrap(~ PLOT, ncol = 2) + 
