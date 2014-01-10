@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>eimarGsodTools</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>eimarGsodTools</h1>
+
+<h3>What it is all about</h3>
+
+<p>Every person dealing with long-term climatological data (e.g. of daily air
+temperature, relative humidity, and precipitation amounts) will sooner or later
+stumble across the Global Summary Of Day (GSOD) climate data collection 
+provided by the National Oceanic and Atmospheric Association (NOAA). In the 
+course of my PhD thesis, I&#39;ve been recently looking for available GSOD 
+stations in close vicinity to Mt. Kilimanjaro, Tanzania, and as I am trying to
+realize most of my coding work using R, I quickly noticed that there are only a 
+few packages that provide convenient tools for processing GSOD data. Therefore, 
+I started to write this package that includes both downloading data sets of 
+selected climate stations for a given time span as well as 
+some processing steps (detection of statistic outliers, gap-filling based upon
+linear interpolation, linear models and singular spectrum analysis (SSA)) for 
+quality assurance.</p>
+
+<h3>Introducing the processing chain</h3>
+
+<p>I am currently struggling with loading sample data automatically into the R
+workspace. Any kind of advice on that would be highly appreciated. The ASCII file 
+containing the information about all the single GSOD stations around the world 
+is absolutely necessary in order to find a desired location for data download, 
+and right now, I see now other way than importing it manually by calling <code>data()</code>.</p>
+
+<p><strong>Getting started</strong></p>
+
+<p>After loading the package and the corresponding data, I thought it might be quite
+useful to optionally sort out some inconveniences in the GSOD station list. The
+referring function is called <em>gsodReformat()</em>. The function includes the possibilities
+to reformat the following columns:</p>
+
+<ul>
+<li>elevation: initially in dm, transferred to m if <code>elevation = TRUE</code> (default)</li>
+<li>coordinates: initially in decimal degrees / 1000, transferred to &#39;usual&#39; 
+decimal degrees if <code>coords = TRUE</code> (default); in addition, all invalid coordinates, 
+i.e. longitude &lt; -180° or &gt; 180° and latitude &lt; -90° or &gt; 90° degree, are 
+repliced with NA.</li>
+<li>the supplied data.frame can be converted into a <code>SpatialPointsDataFrame</code> if
+<code>df2sp = TRUE</code> (default is <code>df2sp = FALSE</code>)</li>
+</ul>
+
+<p>Hence, the first lines of code using <strong>eimarGsodTools</strong> should probably look like this:</p>
+
+<pre><code class="S"># Load package and data
+library(eimarGsodTools)
+data(gsodstations)
+
+# Reformat data
+stations.sp &lt;- gsodReformat(data = gsodstations,
+                            elevation = TRUE, 
+                            coords = TRUE,
+                            df2sp = TRUE)
+</code></pre>
+
+<p><strong>Downloading data</strong></p>
+
+<pre><code class="S">
+</code></pre>
+
+</body>
+
+</html>
+

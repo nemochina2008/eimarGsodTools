@@ -4,6 +4,7 @@
 gsodReformat <- function(data, 
                          elevation = TRUE, 
                          coords = TRUE, 
+                         df2sp = FALSE,
                          ...) {
 
   # Reformat elevation (optional)
@@ -20,6 +21,10 @@ gsodReformat <- function(data,
                      !is.na(data[, i]), i] <- NA
     }
   }
+  
+  # Convert data frame to spatial object (optional)
+  if (df2sp)
+    data <- gsodDf2Sp(data = data)
   
   # Return reformatted data
   return(data)
