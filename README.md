@@ -44,7 +44,7 @@ repliced with NA.
 Hence, the first lines of code using **eimarGsodTools** should probably look like this:
 
 ```S
-# Load package and data
+# Load package and related data
 library(eimarGsodTools)
 data(gsodstations)
 
