@@ -4,15 +4,16 @@
 gfLinInt <- function(data, 
                      prm = "TEMP",
                      limit = 5, 
+                     width = 11, 
                      save.output = T,
                      ...) {
 
   # Required packages
   library(zoo)
-  library(foreach)
+  library(foreach) 
   
 
-## Linear interpolation over small (n <= 5) measurement gaps
+## Linear interpolation over small (n <= limit) measurement gaps
 
   # Loop through all columns to be gap-filled via linear interpolation
   filled.data <- lapply(prm, function(i) {
@@ -33,7 +34,7 @@ gfLinInt <- function(data,
     # Time series
     tmp.ts <- zoo(data@Parameter[[i]], order.by = as.Date(data@Datetime))
     # Rolling mean (window width = 11)
-    tmp.ts.rm <- rollapply(data = tmp.ts, width = 11, fill = list(NA, NULL, NA), 
+    tmp.ts.rm <- rollapply(data = tmp.ts, width = width, fill = list(NA, NULL, NA), 
                            partial = T, function(...) mean(..., na.rm = T))
     
     # Replace identified gaps by rolling mean
