@@ -2,7 +2,8 @@
 \alias{gfLinInt}
 \title{Fill small continuous gaps via linear interpolation}
 \usage{
-gfLinInt(data, prm = "TEMP", limit = 5, save.output = T, ...)
+gfLinInt(data, prm = "TEMP", limit = 5, width = 11, save.output = T,
+  ...)
 }
 \description{
 Fill small continuous gaps via linear interpolation

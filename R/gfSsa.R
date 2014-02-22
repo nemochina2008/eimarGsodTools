@@ -10,7 +10,7 @@ gfSsa <- function(data,
   
   # Required packages
   lib <- c("zoo", "Rssa")
-  sapply(lib, function(x) stopifnot(require(x, character.only = T)))
+  sapply(lib, function(x) stopifnot(require(x, character.only = TRUE)))
   
   # Read file into ki.data object (optional)
   if (class(data) == "character")
