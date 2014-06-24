@@ -82,7 +82,7 @@ seasonalShift <- function(fls,
     ggplot(aes(x = month, y = value, group = variable, colour = variable), 
            data = tmp.all) + 
       geom_line(lwd = 1) + 
-      facet_wrap(~ station, ncol = ncol) + 
+      facet_wrap(~ station, ncol = ncol, scales = "free_y") + 
       scale_colour_manual("", 
                           values = cols, 
                           breaks = c(label.st.2, label.st.1, label.nd.1, label.nd.2)) + 
