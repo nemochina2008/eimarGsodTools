@@ -5,7 +5,7 @@ gsodPlot <- function(fls.orig = NULL,
                      fls.gf, 
                      stations, 
                      prm.orig = "TEMP",
-                     type = "filled",
+                     type = "trends",
                      ...) {
   
   # Required packages
@@ -143,48 +143,32 @@ gsodPlot <- function(fls.orig = NULL,
               panel.grid.minor = element_line(size = 1.1))
       
       # Plot gap-filled GSOD data only  
-    } else {  
-      # Reformat and append gap-filled data
-      ta.gf.df <- foreach(i = ta.gf, j = stations, .combine = "rbind") %do%
+    } else if (type == "trends") {  
+
+      # Reformat, append and melt quality-controlled data
+      ta.orig.df <- melt(foreach(i = ta.orig, j = stations, .combine = "rbind") %do%
         data.frame(DATE = time(i), PLOT = j, MEAN = as.numeric(i$TEMP), 
-                   MAX = as.numeric(i$MAX), MIN = as.numeric(i$MIN))
+                   MAX = as.numeric(i$MAX), MIN = as.numeric(i$MIN)), 
+        id.vars = c(1, 2))
+
+      # Reformat, append and melt gap-filled data
+      ta.gf.df <- melt(foreach(i = ta.gf, j = stations, .combine = "rbind") %do%
+        data.frame(DATE = time(i), PLOT = j, MEAN = as.numeric(i$TEMP), 
+                   MAX = as.numeric(i$MAX), MIN = as.numeric(i$MIN)), 
+        id.vars = c(1, 2))
       
-      # Melt gap-filled data
-      ta.gf.df <- melt(ta.gf.df, id.vars = c(1, 2))
       # Reorder factor levels
+      ta.orig.df$variable <- factor(ta.orig.df$variable, levels = c("MIN", "MEAN", "MAX"))
       ta.gf.df$variable <- factor(ta.gf.df$variable, levels = c("MIN", "MEAN", "MAX"))
       
-      #     ggplot() + 
-      #       geom_line(aes(x = DATE, y = TEMP, colour = "grey50"), data = ta.gf.df) + 
-      #       facet_wrap(~ PLOT, ncol = 2) + 
-      #       stat_smooth(aes(x = DATE, y = TEMP, colour = "black"), linetype = "solid",
-      #                   data = ta.gf.df, method = "lm", size = 1.5, se = FALSE) + 
-      #       stat_smooth(aes(x = DATE, y = MIN, colour = "blue"), linetype = "dotted", 
-      #                   data = ta.gf.df, method = "lm", size = 1.2, se = FALSE) + 
-      #       stat_smooth(aes(x = DATE, y = MAX, colour = "red"), linetype = "dotted", 
-      #                   data = ta.gf.df, method = "lm", size = 1.2, se = FALSE) + 
-      #       scale_x_date(limits = c(as.Date("1973-01-01"), as.Date("2013-12-31")), 
-      #                    breaks = seq(as.Date("1970-01-01"), as.Date("2020-01-01"), "10 years"), 
-      #                    labels = date_format("%Y"), minor_breaks = date_breaks("2 years")) + 
-      #       scale_colour_manual("GSOD daily \nair temperature", 
-      #                           values = c("black" = "black", "grey50" = "grey50", 
-      #                                      "blue" = "blue", "red" = "red"), 
-      #                           breaks = c("grey50", "black", "blue", "red"),
-      #                           labels = c("Mean", "Mean (linear trend)", 
-      #                                      "Minimum (linear trend)", 
-      #                                      "Maximum (linear trend)")) +
-      #       scale_linetype_manual(values = c(rep("solid", 2), rep("dotted", 2))) +
-      #       labs(list(x = "Time [d]", y = "Temperature [°C]")) + 
-      #       theme_bw() + 
-      #       theme(text = element_text(size = 25), 
-      #             legend.key = element_rect(fill = "transparent"), 
-      #             panel.grid.major = element_line(size = 1.2), 
-      #             panel.grid.minor = element_line(size = 1.1))
       ggplot(aes(x = DATE, y = value, colour = variable, linetype = variable), 
              data = ta.gf.df) + 
         geom_line(,subset = .(variable == "MEAN"), colour = "grey65") +
+        geom_line(aes(x = DATE, y = value, colour = variable, linetype = variable),
+                  data = ta.orig.df, ,subset = .(variable == "MEAN"), 
+                  colour = "grey35") +
         stat_smooth(size = 1.2, method = "lm", se = FALSE) + 
-        facet_wrap(~ PLOT, ncol = 2) + 
+        facet_wrap(~ PLOT, ncol = 1) + 
         scale_x_date(limits = c(as.Date("1973-01-01"), as.Date("2013-12-31")), 
                      breaks = seq(as.Date("1970-01-01"), as.Date("2020-01-01"), "10 years"), 
                      labels = date_format("%Y"), minor_breaks = date_breaks("2 years")) + 
