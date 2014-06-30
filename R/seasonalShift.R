@@ -6,11 +6,11 @@ seasonalShift <- function(fls,
                           end = c("2008-01-01", "2012-12-31"), 
                           stations,
                           ncol = 2,
-                          palette = c("cornflowerblue", "red2", "grey65", "grey35"), 
+                          cols = NULL, 
                           ...) {
   
   # Required packages
-  lib <- c("foreach", "zoo", "reshape2", "ggplot2")
+  lib <- c("foreach", "zoo", "reshape2", "ggplot2", "RColorBrewer")
   sapply(lib, function(x) stopifnot(require(x, character.only = TRUE)))
 
   if ("Rsenal" %in% rownames(installed.packages())) {
@@ -76,22 +76,31 @@ seasonalShift <- function(fls,
     label.nd.1 <- paste(substr(end[[1]], 1, 4), collapse = "-")
     label.nd.2 <- paste(substr(end[[2]], 1, 4), collapse = "-")
     
-    cols <- palette
-    names(cols) <- c(label.st.1, label.nd.1, label.st.2, label.nd.2)
+    # Color palette
+    if (is.null(cols)) {
+      greys <- brewer.pal(9, "Greys")
+      blues <- brewer.pal(9, "Blues")
+      
+      cols <- c(greys[3], blues[3], blues[9], greys[9])
+    }
     
-    ggplot(aes(x = month, y = value, group = variable, colour = variable), 
-           data = tmp.all) + 
-      geom_line(lwd = 1) + 
+    names(cols) <- c(label.st.1, label.st.2, label.nd.2, label.nd.1)
+    
+    ggplot(aes(x = month, y = value, group = variable, colour = variable, 
+               linetype = variable), data = tmp.all) + 
+      geom_line(lwd = 2) + 
       facet_wrap(~ station, ncol = ncol, scales = "free_y") + 
       scale_colour_manual("", 
                           values = cols, 
-                          breaks = c(label.st.2, label.st.1, label.nd.1, label.nd.2)) + 
+                          breaks = c(label.st.1, label.st.2, label.nd.2, label.nd.1)) + 
+      scale_linetype_manual("", values = c(2, 2, 1, 1), 
+                            breaks = c(label.st.1, label.st.2, label.nd.2, label.nd.1)) + 
       labs(list(x = "\nMonth", y = "Temperature [°C]\n")) + 
       theme_bw() + 
       theme(text = element_text(...), 
-            legend.key = element_rect(fill = "transparent"), 
-            panel.grid.major = element_line(size = 1.2), 
-            panel.grid.minor = element_line(size = 1.1))
+#             panel.grid.major = element_line(size = 1.2), 
+#             panel.grid.minor = element_line(size = 1.1),
+            legend.key = element_rect(fill = "transparent"))
   } else {
 
     label.st <- paste(substr(start, 1, 4), collapse = "-")
