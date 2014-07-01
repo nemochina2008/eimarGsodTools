@@ -24,7 +24,7 @@ seasonalShift <- function(fls,
   # Import data
   tmp.all <- foreach(i = fls, j = stations, .combine = "rbind") %do% {
     
-    Reduce(function(...) merge(..., by = c(1, 2)), 
+    Reduce(function(...) merge(..., by = c(1, 2), sort = FALSE), 
            foreach(k = start, l = end) %do% {
       tmp <- read.csv(i, stringsAsFactors = FALSE)
       tmp$year <- as.Date(substr(tmp$Datetime, 1, 10))
@@ -97,9 +97,9 @@ seasonalShift <- function(fls,
                             breaks = c(label.st.1, label.st.2, label.nd.2, label.nd.1)) + 
       labs(list(x = "\nMonth", y = "Temperature [°C]\n")) + 
       theme_bw() + 
-      theme(text = element_text(...), 
-#             panel.grid.major = element_line(size = 1.2), 
-#             panel.grid.minor = element_line(size = 1.1),
+      theme(text = element_text(size = 15), 
+            panel.grid.major = element_blank(), 
+            panel.grid.minor = element_blank(),
             legend.key = element_rect(fill = "transparent"))
   } else {
 
@@ -116,8 +116,8 @@ seasonalShift <- function(fls,
       theme_bw() + 
       theme(text = element_text(...), 
             legend.key = element_rect(fill = "transparent"), 
-            panel.grid.major = element_line(size = 1.2), 
-            panel.grid.minor = element_line(size = 1.1))
+            panel.grid.major = element_blank(), 
+            panel.grid.minor = element_blank())
   
   }
   
