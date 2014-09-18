@@ -1,16 +1,12 @@
 #' Identify nearby GSOD stations based on a given geographic location
 #' 
-#' @export adjGsodStations
-adjGsodStations <- function(x, 
+#' @export stationFromCoords
+stationFromCoords <- function(x, 
                             y = NULL, 
                             locations, 
                             width = 50, 
-                            id = F, 
+                            id = FALSE, 
                             ...) {
-  
-  # Required packages
-  lib <- c("sp", "gmt")
-  sapply(lib, function(x) stopifnot(require(x, character.only = T)))
   
   # Calculate distance from point of interest to supplied locations
   coords <- coordinates(locations)
