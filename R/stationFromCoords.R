@@ -2,28 +2,22 @@
 #' 
 #' @export stationFromCoords
 stationFromCoords <- function(x, 
-                            y = NULL, 
-                            locations, 
-                            width = 50, 
-                            id = FALSE, 
-                            ...) {
+                              y = NULL, 
+                              width = 50, 
+                              ...) {
   
-  # Calculate distance from point of interest to supplied locations
-  coords <- coordinates(locations)
-  x.to.locations <- sapply(seq(nrow(coordinates(locations))), function(i) {
+  # Calculate distance from point of interest to supplied stations
+  stations <- gsodReformat(gsodstations, df2sp = TRUE)
+  coords <- coordinates(stations)
+  x.to.stations <- sapply(seq(nrow(coordinates(stations))), function(i) {
     as.numeric(geodist(Nfrom = y, Efrom = x, 
                        Nto = coords[i, 2], Eto = coords[i, 1]))
   })
-  # Add calculated distances to locations
-  locations$DIST <- round(x.to.locations, digits = 3)
+  # Add calculated distances to stations
+  stations$DIST <- round(x.to.stations, digits = 3)
   
-  # Identify and return GSOD stations (or referring station ID) that lie within 
-  # the given buffer width
-  index <- which(x.to.locations <= width)
+  # Identify and return GSOD stations that lie within the given buffer width
+  index <- which(x.to.stations <= width)
   
-  if (id) {
-    return(locations$USAF[index])
-  } else {
-    return(locations[index, ])
-  }
+  return(stations[index, ])
 }

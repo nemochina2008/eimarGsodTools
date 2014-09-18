@@ -1,47 +1,41 @@
 #' Download selected GSOD data based on supplied station ID
 #' 
 #' @export dlGsodStations
-dlGsodStations <- function(wban,
-                           locations = NULL, 
+dlGsodStations <- function(usaf,
                            start.year.rec, 
                            end.year.rec,
                            dsn = ".", 
-                           unzip = T, 
+                           unzip = TRUE, 
+                           remove.gz = FALSE,
+                           remove.op = FALSE,
                            ...) {
   
-  # Required packages
-  lib <- c("sp", "EcoHydRology")
-  sapply(lib, function(x) stopifnot(require(x, character.only = T)))
-
   # Load GSOD station list from scratch if not supplied
-  if (is.null(locations)) {
-    data(GSOD_history)
-    locations <- GSOD_history
-  }
+  locations <- gsodstations
   
   # Extract desired station from list of GSOD stations
-  dl.wbans <- locations[locations$USAF %in% wban, ]
+  dl.usaf <- locations[locations$USAF %in% usaf, ]
 
   # Loop through all GSOD stations to be downloaded
-  for (wbans in 1:nrow(dl.wbans)) {
+  for (usafs in 1:nrow(dl.usaf)) {
     
     # Verify user-defined temporal range
-    start.year <- max(start.year.rec, substr(dl.wbans$BEGIN[wbans], 1, 4))
-    end.year <- min(end.year.rec, substr(dl.wbans$END[wbans], 1, 4))
+    start.year <- max(start.year.rec, substr(dl.usaf$BEGIN[usafs], 1, 4))
+    end.year <- min(end.year.rec, substr(dl.usaf$END[usafs], 1, 4))
 
     # Abandon current iteration in case start_year is higher than end_year
     if (start.year > end.year) {
-      cat("Skipping GSOD station ", dl.wbans$USAF[wbans], 
+      cat("Skipping GSOD station ", dl.usaf$USAF[usafs], 
           ": Start year is higher than end year!", sep = "")
       next()
     }
     
-    cat("Processing GSOD station", dl.wbans$USAF[wbans], "... \n")
+    cat("Processing GSOD station", dl.usaf$USAF[usafs], "... \n")
     
     # Download op.gz of current station per year
     for (year in start.year:end.year) {
       # Basename of both URL and destfile
-      dlbase <- paste(dl.wbans$USAF[wbans], "-", dl.wbans$WBAN[wbans], "-", 
+      dlbase <- paste(dl.usaf$USAF[usafs], "-", dl.usaf$WBAN[usafs], "-", 
                       year, ".op.gz", sep = "")
       # URL
       dlurl <- paste0("ftp://ftp.ncdc.noaa.gov/pub/data/gsod/", year, "/", 
@@ -50,7 +44,7 @@ dlGsodStations <- function(wban,
       dlfile <- paste0(dsn, "/", dlbase)
       # Download
       print(dlurl)
-      try(download.file(dlurl, dlfile), silent = T)
+      try(download.file(dlurl, dlfile), silent = TRUE)
     }
   }
     
@@ -62,13 +56,13 @@ dlGsodStations <- function(wban,
                           end.year = end.year, 
                           ...)
     # List and return unzipped .op files
-    files <- list.files(dsn, pattern = ".*.op$", full.names = T)
+    files <- list.files(dsn, pattern = ".*.csv$", full.names = TRUE)
     return(files)
     
   } else {
     
     # List and return downloaded .gz files
-    files <- list.files(dsn, pattern = ".*.op.gz$", full.names = T)
+    files <- list.files(dsn, pattern = ".*.op.gz$", full.names = TRUE)
     return(files)
   }
 }

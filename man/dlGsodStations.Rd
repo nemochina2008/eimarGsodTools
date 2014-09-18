@@ -3,8 +3,8 @@
 \alias{dlGsodStations}
 \title{Download selected GSOD data based on supplied station ID}
 \usage{
-dlGsodStations(wban, locations = NULL, start.year.rec, end.year.rec,
-  dsn = ".", unzip = T, ...)
+dlGsodStations(usaf, start.year.rec, end.year.rec, dsn = ".", unzip = TRUE,
+  ...)
 }
 \description{
 Download selected GSOD data based on supplied station ID

@@ -4,15 +4,23 @@
 gzGsodStations <- function(dsn = ".",
                            start.year = NULL, 
                            end.year = NULL, 
-                           save.output = F,
+                           save.output = FALSE,
+                           remove.gz = FALSE,
+                           remove.op = FALSE,
                            ...) {
   
   # Unzip downloaded *.gz files (Note: not sure if this works on a Windows OS)
   system(paste0("gunzip ", getwd(), "/", dsn, "/*.gz"), 
-         intern = F, ignore.stderr = T)
+         intern = FALSE, ignore.stderr = TRUE)
   
-  # List available GSOD files
-  files <- list.files(dsn, pattern = "*.op$", full.names = T)
+  # Optionally remove *.gz files
+  if (remove.gz) {
+    fls <- list.files(dsn, pattern = ".gz$", full.names = TRUE)
+    file.remove(fls)
+  }
+    
+  # List available *.op files
+  files <- list.files(dsn, pattern = "*.op$", full.names = TRUE)
   
   # Subset files by supplied temporal range
   start.year <- as.numeric(start.year)
@@ -37,9 +45,9 @@ gzGsodStations <- function(dsn = ".",
     df.all <- do.call("rbind", lapply(files[grep(h, files)], function(i) {
       
       # Import fixed width formatted data
-      df <- read.fwf(i, column.widths, header = F, skip = 1, fill = T,
+      df <- read.fwf(i, column.widths, header = FALSE, skip = 1, fill = TRUE,
                      na.strings = c("999.9", "9999.9", "99.99"),
-                     stringsAsFactors = F)
+                     stringsAsFactors = FALSE)
       
       # Remove redundant columns
       df <- df[, -c(seq(2, 34, 2), 37, 40, 43, 44)]
@@ -57,7 +65,13 @@ gzGsodStations <- function(dsn = ".",
     # Save (optional) and return merged annual data per station
     if (save.output)
       write.csv(df.all, paste0(dsn, "/", h, "-99999-", start.year, "-", 
-                               end.year, ".csv"), row.names = F)
+                               end.year, ".csv"), row.names = FALSE)
+    
+    # Optionally remove *.op files
+    if (remove.op) {
+      fls <- list.files(dsn, pattern = ".op$", full.names = TRUE)
+      file.remove(fls)
+    }
     
     return(df.all)
   })
