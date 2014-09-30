@@ -27,6 +27,9 @@
 #' @author
 #' Florian Detsch
 #' 
+#' @seealso
+#' \code{\link{gsodDf2Sp}}
+#' 
 #' @examples
 #' # Load data
 #' data(gsodstations)

@@ -52,4 +52,7 @@ plot(gsod_shp)
 \author{
 Florian Detsch
 }
+\seealso{
+\code{\link{gsodDf2Sp}}
+}
 
