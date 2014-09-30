@@ -6,9 +6,9 @@
 stationFromCoords(x, y = NULL, width = 50, ...)
 }
 \arguments{
-\item{x}{Numeric. Either a single number specifying the x (longitude)
-coordinate, or a vector of two numbers specifying the x and y (latitude)
-coordinate.}
+\item{x}{Numeric. A a single number specifying the x (longitude) coordinate,
+or a vector of two numbers specifying the x and y (latitude) coordinate, or
+an object of class \code{SpatialPoints}.}
 
 \item{y}{Numeric, default is NULL. A single number specifying the y
 coordinate. Note: if a vector of two numbers is supplied to the previous
