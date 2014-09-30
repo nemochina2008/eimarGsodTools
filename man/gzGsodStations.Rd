@@ -4,7 +4,7 @@
 \title{Unzip and merge downloaded GSOD files}
 \usage{
 gzGsodStations(dsn = ".", start.year = NULL, end.year = NULL,
-  save.output = F, ...)
+  save.output = FALSE, remove.gz = FALSE, remove.op = FALSE, ...)
 }
 \description{
 Unzip and merge downloaded GSOD files

@@ -4,7 +4,7 @@
 \title{Download selected GSOD data based on supplied station ID}
 \usage{
 dlGsodStations(usaf, start.year.rec, end.year.rec, dsn = ".", unzip = TRUE,
-  ...)
+  remove.gz = FALSE, remove.op = FALSE, ...)
 }
 \description{
 Download selected GSOD data based on supplied station ID
