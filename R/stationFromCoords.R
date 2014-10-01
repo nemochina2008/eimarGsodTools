@@ -62,17 +62,16 @@ stationFromCoords <- function(x,
   }
   
   # Calculate distance from point of interest to supplied stations
-  stations <- gsodReformat(gsodstations, df2sp = TRUE)
-  coords <- coordinates(stations)
-  x.to.stations <- sapply(seq(nrow(coordinates(stations))), function(i) {
+  stations <- gsodReformat(gsodstations, df2sp = FALSE)
+  x.to.stations <- sapply(seq(nrow(stations)), function(i) {
     as.numeric(geodist(Nfrom = y, Efrom = x, 
-                       Nto = coords[i, 2], Eto = coords[i, 1]))
+                       Nto = stations[i, "LAT"], Eto = stations[i, "LON"]))
   })
   # Add calculated distances to stations
   stations$DIST <- round(x.to.stations, ...)
   
   # Identify and return GSOD stations that lie within the given buffer width
-  index <- which(x.to.stations <= width)
+  stations <- stations %>% filter(DIST <= width) %>% arrange(DIST)  %>% gsodDf2Sp()
   
-  return(stations[index, ])
+  return(stations)
 }
