@@ -11,30 +11,32 @@ gsod2ki(data, date_col = "YEARMODA", prm_col = "TEMP", time_step = "day",
 \arguments{
 \item{data}{\code{data.frame}. Input data, e.g. from \code{\link{dlGsodStations}}.}
 
-\item{date_col}{Character or numeric, default is "YEARMODA". Indicates
-which column holds the time information.}
+\item{date_col}{Character or numeric, default is "YEARMODA". Indicates the
+date column.}
 
-\item{prm_col}{Character or numeric, default is "TEMP". Indicates which
-column holds the measurement values.}
+\item{prm_col}{Character or numeric, default is "TEMP". Indicates the
+parameter column(s).}
 
 \item{time_step}{Character, default is "day". Indicates the time step between
 two measurements.}
 
-\item{timezone}{Character, default is NA.}
+\item{timezone}{Character, default is "NA".}
 
 \item{aggtime}{Character, default is "-999".}
 
-\item{plot_id}{Character, default is NA.}
+\item{plot_id}{Character, default is "NA".}
 
 \item{ep_plot_id}{Character, default is "xxx".}
 
-\item{station_id}{Character, default is NA.}
+\item{station_id}{Character, default is "NA".}
 
 \item{proc_level}{Numeric, default is -999.}
 
-\item{qual_flag}{Numeric, default is NA.}
+\item{qual_flag}{Numeric, default is "NA".}
 
-\item{save_output}{Logical, default is FALSE.}
+\item{save_output}{Logical, default is FALSE. If TRUE, a local copy of the
+reformatted GSOD data will be created based on the settings provided to
+\code{...}}
 
 \item{df2ki}{Logical, default is FALSE. If TRUE, the reformatted data is
 converted to an object of class \code{ki.data}.}
@@ -42,8 +44,8 @@ converted to an object of class \code{ki.data}.}
 \item{...}{Additional arguments passed to \code{\link{write.csv}}.}
 }
 \value{
-An object of class \code{data.frame}, or an object of class \code{ki.data} if
-\code{df2ki = TRUE}.
+An object of class \code{data.frame} or, if \code{df2ki = TRUE}, an object of
+class \code{ki.data}.
 }
 \description{
 This function converts GSOD data from native format to standard KiLi SP1 format
