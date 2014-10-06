@@ -1,18 +1,71 @@
-#' Impute missing values based on singular spectrum analysis (SSA)
+#' Time-series forecasting based on singular spectrum analysis (SSA)
+#' 
+#' @description
+#' This function applies singular spectrum analysis (SSA) in order to impute 
+#' missing values in a data set based on time-series forecasting. Note that the
+#' SSA method requires sufficiently long series of continuous measurements, i.e.
+#' with no data gaps at all. Therefore, \code{\link{gfLinInt}} and 
+#' \code{\link{gfJulendat}} should be used to fill smaller and medium-sized gaps
+#' before applying \code{gfSsa}.
+#' 
+#' @param data Object of class `ki.data` or a filepath that can be coerced to
+#' \code{ki.data}. The data set under investigation. 
+#' @param prm Character, default is "TEMP". Parameter(s) to fill.
+#' @param reversed_forecast Logical, default is FALSE. If TRUE, the supplied 
+#' measurement series is reversed prior to forecasting, i.e. values are predicted
+#' into the past rather than into the future.
+#' @param origin An object of class \code{Date}, or a character that can be 
+#' coerced to such an object. See \code{\link{as.Date}}.
+#' @param ... Additional arguments passed to \code{\link{round}}.
+#' 
+#' @return
+#' An object of class \code{ki.data}.
+#' 
+#' @author
+#' Florian Detsch
+#' 
+#' @seealso
+#' \code{\link{gfLinInt}}, \code{\link{gfJulendat}}
+#' 
+#' @examples
+#' library(dplyr)
+#' 
+#' data(gsodstations)
+#' gar <- filter(gsodstations, STATION.NAME == "GARISSA")
+#' 
+#' gsod_gar <- dlGsodStations(usaf = gar$USAF,
+#'                            start_year = 1990, end_year = 1995,
+#'                            dsn = paste0(getwd(), "/data/gar/"),
+#'                            unzip = TRUE)
+#' 
+#' # Conversion to KiLi SP1 `ki.data` object
+#' ki_gar <- gsod2ki(data = gsod_gar,
+#'                   prm_col = c("TEMP", "MIN", "MAX"),
+#'                   df2ki = TRUE)
+#' 
+#' # Fill small gaps (n <= 5) with linear interpolation
+#' ki_gar_linint <- gfLinInt(data = ki_gar, 
+#'                           prm = c("TEMP", "MIN", "MAX"))
+#' 
+#' # Fill remaining gaps based on SSA
+#' ki_gar_ssa <- gfSsa(data = ki_gar_linint, 
+#'                     prm = c("TEMP", "MIN", "MAX"), 
+#'                     reversed_forecast = FALSE, 
+#'                     origin = "1970-01-01", digits = 2)
+#' 
+#' plot(slot(ki_gar_ssa, "Parameter")[["TEMP"]], type = "l", col = "red")
+#' lines(slot(ki_gar_linint, "Parameter")[["TEMP"]], col = "green")
+#' lines(slot(ki_gar, "Parameter")[["TEMP"]])             
 #' 
 #' @export gfSsa
+#' @aliases gfSsa
 gfSsa <- function(data, 
                   prm = "TEMP", 
-                  reversed.forecast = F, 
+                  reversed_forecast = FALSE, 
                   origin = "1970-01-01", 
-                  save.output = F, 
                   ...) {
   
-  # Required packages
-  lib <- c("zoo", "Rssa")
-  sapply(lib, function(x) stopifnot(require(x, character.only = TRUE)))
-  
-  # Read file into ki.data object (optional)
+  # If `class(data) == "character"` (i.e. filepath) -> convert to `ki.data` object
   if (class(data) == "character")
     data <- as.ki.data(data)
   
@@ -23,20 +76,21 @@ gfSsa <- function(data,
   filled.data <- lapply(prm, function(h) {
 
     # Reverse time series prior to forecasting (optional)
-    tmp.rev <- if (reversed.forecast) {
-      rev(as.numeric(data@Parameter[[h]]))
+    tmp.rev <- if (reversed_forecast) {
+      rev(as.numeric(slot(data, "Parameter")[[h]]))
     } else {
-      as.numeric(data@Parameter[[h]])
+      as.numeric(slot(data, "Parameter")[[h]])
     }
     
     # Convert numeric vector to 'zoo' time series
-    tmp.rev.ts <- zoo(tmp.rev, order.by = as.Date(index(data@Parameter[[h]]), 
-                                                  origin = origin))
+    tmp.rev.ts <- zoo(tmp.rev, 
+                      order.by = as.Date(index(slot(data, "Parameter")[[h]]), 
+                                         origin = origin))
     # Insert potentially reversed time series into referring parameter slot
-    data.rev@Parameter[[h]] <- as.numeric(tmp.rev.ts)
+    slot(data.rev, "Parameter")[[h]] <- as.numeric(tmp.rev.ts)
     
     # Identify lengths of measurement gaps
-    data.rev.na <- which(is.na(data.rev@Parameter[[h]]))
+    data.rev.na <- which(is.na(slot(data.rev, "Parameter")[[h]]))
     ki.rev.na <- do.call(function(...) {
       tmp <- rbind(...)
       names(tmp) <- c("start", "end", "span")
@@ -50,12 +104,12 @@ gfSsa <- function(data,
     while (length(ki.rev.na) > 0) {
       
       # Identify lengths of continuous measurements
-      ki.rev.nona <- do.call("rbind", gfNogapLength(gap.lengths = ki.rev.na, 
+      ki.rev.nona <- do.call("rbind", gfNogapLength(gaps = ki.rev.na, 
                                                     data.dep = data.rev))
       
       # Deconstruct continuous measurement series
       tmp.ssa <- 
-        ssa(data.rev@Parameter[[h]][ki.rev.nona[1, 1]:ki.rev.nona[1, 2]], 
+        ssa(slot(data.rev, "Parameter")[[h]][ki.rev.nona[1, 1]:ki.rev.nona[1, 2]], 
             L = if (ki.rev.nona[1, 3] > 365) {
               365
             } else if (ki.rev.nona[1, 3] <= 365 & ki.rev.nona[1, 3] > 182) {
@@ -66,11 +120,11 @@ gfSsa <- function(data,
             })
 
       # Forecast the next gap
-      data.rev@Parameter[[h]][ki.rev.na[1,1] : ki.rev.na[1,2]] <-
-        forecast(tmp.ssa, groups = list(seq(nlambda(tmp.ssa))), len = ki.rev.na[1,3])$mean
+      slot(data.rev, "Parameter")[[h]][ki.rev.na[1,1] : ki.rev.na[1,2]] <-
+        forecast(tmp.ssa, groups = list(seq(nsigma(tmp.ssa))), len = ki.rev.na[1,3])$mean
       
       # Update lengths of measurement gaps
-      data.rev.na <- which(is.na(data.rev@Parameter[[h]]))
+      data.rev.na <- which(is.na(slot(data.rev, "Parameter")[[h]]))
       if (length(data.rev.na) > 0) {
         ki.rev.na <- do.call(function(...) {
           tmp <- rbind(...)
@@ -86,32 +140,18 @@ gfSsa <- function(data,
     }
     
     # Replace gappy by filled time series
-    if (reversed.forecast) {
-      tmp <- rev(as.numeric(data.rev@Parameter[[h]]))
+    if (reversed_forecast) {
+      tmp <- rev(as.numeric(slot(data.rev, "Parameter")[[h]]))
     } else {
-      tmp <- as.numeric(data.rev@Parameter[[h]])
+      tmp <- as.numeric(slot(data.rev, "Parameter")[[h]])
     }
     
-    return(tmp)
+    return(round(tmp, ...))
   })
   
   # Insert gap-filled time series into referring slots
   for (j in seq(filled.data)) 
-    data@Parameter[[j]] <- filled.data[[j]]
-  
-  # Save (optional) and return output data
-  if (save.output)
-    write.csv(data.frame("Datetime" = data@Datetime, 
-                         "Timezone" = data@Timezone, 
-                         "Aggregationtime" = data@Aggregationtime, 
-                         "PlotId" = data@PlotId$Shortname, 
-                         "EpPlotId" = data@EpPlotId, 
-                         "StationId" = data@StationId$Shortname, 
-                         "Processlevel" = data@Processlevel, 
-                         "Qualityflag" = data@Qualityflag, 
-                         "TEMP" = data@Parameter$TEMP, 
-                         "MAX" = data@Parameter$MAX, 
-                         "MIN" = data@Parameter$MIN), ...)
+    slot(data, "Parameter")[[j]] <- filled.data[[j]]
   
   # Return gap-filled data sets
   return(data)
