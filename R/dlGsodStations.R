@@ -51,16 +51,17 @@ dlGsodStations <- function(usaf,
                            rm_gz = FALSE,
                            ...) {
   
+  # Set `rm_gz = FALSE` in case `unzip = FALSE`
   rm_gz <- ifelse(unzip, rm_gz, FALSE)
   
-  # Load GSOD station list from scratch if not supplied
+  # Load GSOD station list
   data(gsodstations)
   locations <- gsodstations
   
   # Extract desired station from list of GSOD stations
   dl_usaf <- locations %>% filter(USAF == usaf)
 
-  # If not supplied, set start_year and end_year to temporal range of
+  # If not supplied, set start_year and end_year to whole temporal range of
   # available measurements
   start_measurement <- as.numeric(substr(dl_usaf$BEGIN, 1, 4))
   end_measurement <- as.numeric(substr(dl_usaf$END, 1, 4))
@@ -70,15 +71,18 @@ dlGsodStations <- function(usaf,
   if (is.na(end_year))
     end_year <- end_measurement
   
-  # Else, verify user-defined temporal range
+  # Else, verify user-defined temporal range and adjust start year / end year
+  # if `start_year < start_measurement` / `end_year > end_measurement`
   start_year <- max(start_year, start_measurement)
   end_year <- min(end_year, end_measurement)
   
+  # Throw error in case of false user input, i.e. `start_year > end_year`
   if (start_year > end_year)
-    stop("Skipping GSOD station ", dl_usaf$USAF, 
-         ": Start year is higher than end year!", sep = "")
+    stop("Skipping GSOD station ", dl_usaf$USAF, " (", dl_usaf$STATION.NAME, 
+         "): Start year is higher than end year!", sep = "")
   
-  cat("Processing GSOD station", dl_usaf$USAF, "... \n")
+  cat("Processing GSOD station ", dl_usaf$USAF, " (", 
+      as.character(dl_usaf$STATION.NAME), ") ... \n", sep = "")
   
   # Download op.gz of current station per year
   fls_gz <- sapply(start_year:end_year, function(year) {
@@ -87,10 +91,15 @@ dlGsodStations <- function(usaf,
     # URL
     dlurl <- paste0("ftp://ftp.ncdc.noaa.gov/pub/data/gsod/", year, "/", 
                     dlbase)
-    # Destfile
+    # Destination file
     dlfile <- paste0(dsn, "/", dlbase)
-    # Download
-    try(download.file(dlurl, dlfile), silent = FALSE)
+    
+    # Check if destination file already exists, else proceed to download
+    if (file.exists(dlfile)) {
+      cat("File", dlfile, "already exists. Proceeding to next file... \n")
+    } else {      
+      try(download.file(dlurl, dlfile), silent = FALSE)
+    }
     
     return(dlfile)
   })
