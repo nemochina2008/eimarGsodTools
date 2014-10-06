@@ -10,7 +10,9 @@ gsodPlot(fls_orig = NULL, fls, stations, prm = "TEMP", type = "trends",
 \item{fls_orig}{Character, default is NULL. Filepath(s) to the initial (or
 outlier-adjusted) GSOD data set(s).}
 
-\item{fls}{Character. Filepath(s) to the imputed GSOD data set(s).}
+\item{fls}{Character. Filepath(s) to the imputed GSOD data set(s), usually
+derived from \code{\link{gfLinInt}}, \code{\link{gfJulendat}} and/or
+\code{\link{gfSsa}}.}
 
 \item{stations}{Character. Name(s) of the station(s) corresponding to \code{fls}
 and \code{fls_orig} that will be displayed above each facet.}
