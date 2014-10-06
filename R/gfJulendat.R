@@ -69,6 +69,9 @@
 #'                                   dsn = paste0("data/", usaf), 
 #'                                   unzip = TRUE,
 #'                                   save_output = FALSE)
+#'                                   
+#'     # Remove obsolete "NC" columns
+#'     tmp_df_gsod <- tmp_df_gsod[, -grep("^NC$", names(tmp_df_gsod))]
 #'     
 #'     # Fahrenheit -> Celsius
 #'     tmp_df_gsod$TEMP <- tmp_df_gsod %>% select(TEMP) %>% unlist() %>% toCelsius(., digits = 1)
@@ -120,8 +123,8 @@
 #'                        end.datetime = Sys.Date(), 
 #'                        units = "days")
 #' 
-#' plot(jul_gsod$TEMP, col = "red", type = "l", lwd = 2)
-#' lines(slot(df_gsod[[2]], "Parameter")$TEMP)
+#' plot(jul_gsod$TEMP, col = "red", type = "l")
+#' lines(slot(df_gsod[[2]], "Parameter")$TEMP, col = "grey75")
 #'             
 #' @export gfJulendat
 #' @aliases gfJulendat
