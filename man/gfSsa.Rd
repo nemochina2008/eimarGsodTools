@@ -3,8 +3,7 @@
 \alias{gfSsa}
 \title{Time-series forecasting based on singular spectrum analysis (SSA)}
 \usage{
-gfSsa(data, prm = "TEMP", reversed_forecast = FALSE,
-  origin = "1970-01-01", ...)
+gfSsa(data, prm = "TEMP", reversed_forecast = FALSE, ...)
 }
 \arguments{
 \item{data}{Object of class `ki.data` or a filepath that can be coerced to
@@ -15,9 +14,6 @@ gfSsa(data, prm = "TEMP", reversed_forecast = FALSE,
 \item{reversed_forecast}{Logical, default is FALSE. If TRUE, the supplied
 measurement series is reversed prior to forecasting, i.e. values are predicted
 into the past rather than into the future.}
-
-\item{origin}{An object of class \code{Date}, or a character that can be
-coerced to such an object. See \code{\link{as.Date}}.}
 
 \item{...}{Additional arguments passed to \code{\link{round}}.}
 }
@@ -56,7 +52,7 @@ ki_gar_linint <- gfLinInt(data = ki_gar,
 ki_gar_ssa <- gfSsa(data = ki_gar_linint,
                     prm = c("TEMP", "MIN", "MAX"),
                     reversed_forecast = FALSE,
-                    origin = "1970-01-01", digits = 2)
+                    digits = 2)
 
 plot(slot(ki_gar_ssa, "Parameter")[["TEMP"]], type = "l", col = "red")
 lines(slot(ki_gar_linint, "Parameter")[["TEMP"]], col = "green")

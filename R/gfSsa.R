@@ -14,8 +14,6 @@
 #' @param reversed_forecast Logical, default is FALSE. If TRUE, the supplied 
 #' measurement series is reversed prior to forecasting, i.e. values are predicted
 #' into the past rather than into the future.
-#' @param origin An object of class \code{Date}, or a character that can be 
-#' coerced to such an object. See \code{\link{as.Date}}.
 #' @param ... Additional arguments passed to \code{\link{round}}.
 #' 
 #' @return
@@ -51,7 +49,7 @@
 #' ki_gar_ssa <- gfSsa(data = ki_gar_linint, 
 #'                     prm = c("TEMP", "MIN", "MAX"), 
 #'                     reversed_forecast = FALSE, 
-#'                     origin = "1970-01-01", digits = 2)
+#'                     digits = 2)
 #' 
 #' plot(slot(ki_gar_ssa, "Parameter")[["TEMP"]], type = "l", col = "red")
 #' lines(slot(ki_gar_linint, "Parameter")[["TEMP"]], col = "green")
@@ -62,7 +60,6 @@
 gfSsa <- function(data, 
                   prm = "TEMP", 
                   reversed_forecast = FALSE, 
-                  origin = "1970-01-01", 
                   ...) {
   
   # If `class(data) == "character"` (i.e. filepath) -> convert to `ki.data` object
@@ -83,9 +80,7 @@ gfSsa <- function(data,
     }
     
     # Convert numeric vector to 'zoo' time series
-    tmp.rev.ts <- zoo(tmp.rev, 
-                      order.by = as.Date(index(slot(data, "Parameter")[[h]]), 
-                                         origin = origin))
+    tmp.rev.ts <- zoo(tmp.rev, order.by = as.Date(slot(data, "Datetime")))
     # Insert potentially reversed time series into referring parameter slot
     slot(data.rev, "Parameter")[[h]] <- as.numeric(tmp.rev.ts)
     
