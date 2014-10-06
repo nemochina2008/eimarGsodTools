@@ -90,6 +90,9 @@ df_gsod <-
                                   unzip = TRUE,
                                   save_output = FALSE)
 
+    # Remove obsolete "NC" columns
+    tmp_df_gsod <- tmp_df_gsod[, -grep("^NC$", names(tmp_df_gsod))]
+
     # Fahrenheit -> Celsius
     tmp_df_gsod$TEMP <- tmp_df_gsod \%>\% select(TEMP) \%>\% unlist() \%>\% toCelsius(., digits = 1)
     tmp_df_gsod$MIN <- tmp_df_gsod \%>\% select(MIN) \%>\% unlist() \%>\% toCelsius(., digits = 1)
@@ -140,8 +143,8 @@ jul_gsod <- gfJulendat(files.dep = fls_gsod[2],
                        end.datetime = Sys.Date(),
                        units = "days")
 
-plot(jul_gsod$TEMP, col = "red", type = "l", lwd = 2)
-lines(slot(df_gsod[[2]], "Parameter")$TEMP)
+plot(jul_gsod$TEMP, col = "red", type = "l")
+lines(slot(df_gsod[[2]], "Parameter")$TEMP, col = "grey75")
 }
 \author{
 Florian Detsch
