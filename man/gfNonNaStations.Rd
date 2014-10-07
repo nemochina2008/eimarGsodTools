@@ -6,6 +6,6 @@
 gfNonNaStations(data.indep, pos.na, prm.dep = "Ta_200", ...)
 }
 \description{
-Julendat identification of plots with valid measurements
+#
 }
 

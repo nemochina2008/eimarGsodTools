@@ -8,6 +8,6 @@ gfRun(files.dep, files.indep, filepath.coords, quality.levels, gap.limit,
   family, plevel, ...)
 }
 \description{
-Julendat wrapper function controlling imputation of missing values
+#
 }
 

@@ -8,6 +8,6 @@ gfCompleteMonthlyCases(data.dep, data.indep, data.indep.avl, n.plot = 10,
   prm.indep = NA, ...)
 }
 \description{
-Identification of plots with valid contemporary measurements
+#
 }
 

@@ -8,6 +8,6 @@ gfWrite(files.dep, files.indep, filepath.output, filepath.coords = NULL,
   time.window, n.plot, prm.dep, prm.indep, family, plevel, ...)
 }
 \description{
-Julendat wrapper function for gfRun.R
+#
 }
 

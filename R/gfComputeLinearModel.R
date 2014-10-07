@@ -1,6 +1,6 @@
 #' Julendat gap-filling based on linear modelling
 #' 
-#' @export gfComputeLinearModel
+# #' @export gfComputeLinearModel
 gfComputeLinearModel <- function(data = NULL, 
                                  data.cc = NULL,
                                  data.dep,

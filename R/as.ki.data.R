@@ -1,6 +1,6 @@
 #' Convert data set to ki.data object
 #' 
-#' @export as.ki.data
+# #' @export as.ki.data
 
 setClass("ki.data",
          representation(

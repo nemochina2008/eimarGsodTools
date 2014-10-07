@@ -7,6 +7,6 @@ gfValidNaThreshold(data.indep, prm.dep = "Ta_200", na.limit = 0.2,
   time.window.pre, time.window.post, pos.na, ...)
 }
 \description{
-Julendat function to calculate the amount of missing values
+#
 }
 

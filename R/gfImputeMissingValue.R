@@ -1,6 +1,6 @@
 #' Julendat wrapper function for imputation of missing values
 #' 
-#' @export gfImputeMissingValue
+# #' @export gfImputeMissingValue
 gfImputeMissingValue <- function(data.dep, 
                                  data.indep,
                                  na.limit = 0.2,

@@ -1,6 +1,6 @@
 #' Julendat wrapper function controlling imputation of missing values
 #' 
-#' @export gfRun
+# #' @export gfRun
 gfRun <- function(files.dep,
                   files.indep,
                   filepath.coords, 

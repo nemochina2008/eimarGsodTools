@@ -9,6 +9,6 @@ gfComputeLinearModel(data = NULL, data.cc = NULL, data.dep,
   time.window.post, time.window.post.span, ...)
 }
 \description{
-Julendat gap-filling based on linear modelling
+#
 }
 

@@ -8,6 +8,6 @@ gfImputeMissingValue(data.dep, data.indep, na.limit = 0.2, time.window,
   family = gaussian, ...)
 }
 \description{
-Julendat wrapper function for imputation of missing values
+#
 }
 

@@ -1,6 +1,6 @@
 #' Julendat identification of plots with valid measurements
 #' 
-#' @export gfNonNaStations
+# #' @export gfNonNaStations
 gfNonNaStations <- function(data.indep, 
                             pos.na, 
                             prm.dep = "Ta_200", 
