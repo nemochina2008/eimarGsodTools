@@ -145,8 +145,11 @@ gfSsa <- function(data,
   })
   
   # Insert gap-filled time series into referring slots
-  for (j in seq(filled.data)) 
-    slot(data, "Parameter")[[j]] <- filled.data[[j]]
+  for (j in prm) {
+    id_prm <- grep(j, prm)
+    id_ki <- grep(j, names(slot(data, "Parameter")))
+    slot(data, "Parameter")[[id_ki]] <- filled.data[[id_prm]]
+  }
   
   # Return gap-filled data sets
   return(data)
