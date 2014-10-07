@@ -5,11 +5,12 @@
 #' imputed, as well as linear trends of mean, minimum and maximum daily air
 #' temperature.
 #' 
-#' @param fls_orig Character, default is NULL. Filepath(s) to the initial (or 
-#' outlier-adjusted) GSOD data set(s). 
-#' @param fls Character. Filepath(s) to the imputed GSOD data set(s), usually 
-#' derived from \code{\link{gfLinInt}}, \code{\link{gfJulendat}} and/or 
-#' \code{\link{gfSsa}}.
+#' @param fls_orig See argument \code{fls}. 
+#' @param fls Character vector containing filepath(s) to the imputed GSOD data 
+#' set(s), usually derived from \code{\link{gfLinInt}}, \code{\link{gfJulendat}} 
+#' and/or \code{\link{gfSsa}}, or \code{list} containing \code{data.frame} objects
+#' holding the data, or a single \code{data.frame} in case only one GSOD station
+#' shall be visualized.
 #' @param stations Character. Name(s) of the station(s) corresponding to \code{fls}
 #' and \code{fls_orig} that will be displayed above each facet.
 #' @param prm Character, default is "TEMP". Determines which parameter to
@@ -25,35 +26,16 @@
 #' Florian Detsch
 #' 
 #' @examples
-#' library(dplyr)
+#' # Load outlier-adjusted (*gsod*) and gap-filled (*ssa*) data sets from Nairobi 
+#' # and Kilimanjaro Airport, 1990-2000
+#' data("data_nairobi_kilimanjaro")
 #' 
-#' data(gsodstations)
-#' gar <- filter(gsodstations, STATION.NAME == "GARISSA")
-#' 
-#' gsod_gar <- dlGsodStations(usaf = gar$USAF,
-#'                            start_year = 1990, end_year = 1995,
-#'                            dsn = paste0(getwd(), "/data/gar/"),
-#'                            unzip = TRUE)
-#' 
-#' # Conversion to KiLi SP1 `ki.data` object
-#' ki_gar <- gsod2ki(data = gsod_gar,
-#'                   prm_col = c("TEMP", "MIN", "MAX"),
-#'                   df2ki = TRUE)
-#' 
-#' # Fill small gaps (n <= 5) with linear interpolation
-#' ki_gar_linint <- gfLinInt(data = ki_gar, 
-#'                           prm = c("TEMP", "MIN", "MAX"))
-#' 
-#' # Fill remaining gaps based on SSA
-#' ki_gar_ssa <- gfSsa(data = ki_gar_linint, 
-#'                     prm = c("TEMP", "MIN", "MAX"), 
-#'                     reversed_forecast = FALSE, 
-#'                     digits = 2)
-#' 
-#' plot(slot(ki_gar_ssa, "Parameter")[["TEMP"]], type = "l", col = "red")
-#' lines(slot(ki_gar_linint, "Parameter")[["TEMP"]], col = "green")
-#' lines(slot(ki_gar, "Parameter")[["TEMP"]])             
-#'
+#' # Visualize trends in daily mean, minimum, and maximum air temperature
+#' gsodPlot(fls_orig = list(df_gsod_nairobi, df_gsod_kilimanjaro),  
+#'          fls = list(df_ssa_nairobi, df_ssa_kilimanjaro), 
+#'          stations = c("Jomo Kenyatta Intl.", "Kilimanjaro Intl. Airport"), 
+#'          type = "trends")
+#'          
 #' @export gsodPlot
 #' @aliases gsodPlot
 gsodPlot <- function(fls_orig = NULL,
@@ -101,7 +83,7 @@ gsodPlot <- function(fls_orig = NULL,
         
     ggplot(aes(x = DATE, y = Original), data = ta.orig.df) + 
       geom_line() + 
-      facet_wrap(~ PLOT, ncol = 2) + 
+      facet_wrap(~ PLOT, ncol = 1) + 
       scale_x_date(limits = c(start_date, end_date), 
                    breaks = seq(start_date, end_date, "2 years"), 
                    labels = date_format("%Y"), minor_breaks = date_breaks("1 year")) + 
@@ -126,7 +108,7 @@ gsodPlot <- function(fls_orig = NULL,
     ggplot(aes(x = DATE, y = value, group = variable, colour = variable), 
            data = ta.orig.gf.df.mlt) + 
       geom_line() + 
-      facet_wrap(~ PLOT, ncol = 2) + 
+      facet_wrap(~ PLOT, ncol = 1) + 
       scale_x_date(limits = c(start_date, end_date), 
                    breaks = seq(start_date, end_date, "2 years"), 
                    labels = date_format("%Y"), minor_breaks = date_breaks("1 year")) + 
