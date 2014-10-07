@@ -27,7 +27,7 @@
 #' 
 #' @examples
 #' # Load outlier-adjusted (*gsod*) and gap-filled (*ssa*) data sets from Nairobi 
-#' # and Kilimanjaro Airport, 1990-2000
+#' # and Kilimanjaro Airport, 1980-2000
 #' data("data_nairobi_kilimanjaro")
 #' 
 #' # Visualize trends in daily mean, minimum, and maximum air temperature
